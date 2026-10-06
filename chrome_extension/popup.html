@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(22, 29, 47, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(14, 19, 32, 0.9);
+      --accent: #1db954;
+      --accent-glow: rgba(29, 185, 84, 0.35);
+      --accent-grad: linear-gradient(135deg, #1db954 0%, #10b981 100%);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    body {
+      width: 380px;
+      background: radial-gradient(circle at top right, #1a243b 0%, var(--bg) 75%);
+      color: var(--text);
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      background: var(--accent-grad);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0c0f17;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .server-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .status-dot.online {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Server Warning Alert */
+    .server-alert {
+      display: none;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #fca5a5;
+    }
+
+    .server-alert b {
+      color: #fff;
+    }
+
+    /* Video Preview Card */
+    .video-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .thumb-box {
+      width: 80px;
+      height: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #000;
+      position: relative;
+    }
+
+    .thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .thumb-badge {
+      position: absolute;
+      bottom: 3px;
+      right: 3px;
+      background: rgba(0, 0, 0, 0.8);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: #fff;
+    }
+
+    .video-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .video-title-orig {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .quality-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(29, 185, 84, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(29, 185, 84, 0.3);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* Form Fields */
+    .editor-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .custom-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #fff;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .custom-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
+    }
+
+    select.custom-input {
+      cursor: pointer;
+    }
+
+    /* Live Preview File Name */
+    .preview-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-icon {
+      font-size: 14px;
+    }
+
+    .preview-text {
+      font-size: 11px;
+      color: #cbd5e1;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Download Button */
+    .btn-submit {
+      width: 100%;
+      background: var(--accent-grad);
+      color: #0c0f17;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px var(--accent-glow);
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.5);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-muted);
+      min-height: 18px;
+    }
+
+    .toast-msg.success {
+      color: var(--accent);
+    }
+
+    .toast-msg.error {
+      color: #f87171;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(12, 15, 23, 0.3);
+      border-top-color: #0c0f17;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+      </div>
+      MUIF STUDIO
+    </div>
+    <div class="server-status" id="serverStatusBadge">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Checking...</span>
+    </div>
+  </div>
+
+  <!-- Server Warning Alert -->
+  <div id="serverAlert" class="server-alert">
+    ⚠️ <b>Máy chủ chưa chạy!</b><br>
+    Hãy nhấp đúp file <b>TaiNhac_GiaoDienWeb.bat</b> để bật server tải nhạc.
+  </div>
+
+  <div id="mainContainer">
+    <!-- Video Preview Card -->
+    <div class="video-card" id="videoCard">
+      <div class="thumb-box">
+        <img id="videoThumb" src="https://via.placeholder.com/120x90/111/fff?text=YouTube" alt="Thumbnail" />
+        <span class="thumb-badge">128K</span>
+      </div>
+      <div class="video-meta">
+        <div class="video-title-orig" id="videoTitleOrig">Đang tải thông tin video...</div>
+        <div class="quality-tag">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          MP3 128kbps LAME
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="editor-box">
+      <div class="form-group">
+        <label class="form-label">
+          🎵 Tên bài hát
+        </label>
+        <div class="input-wrap">
+          <input type="text" id="songInput" class="custom-input" placeholder="Tên bài hát..." />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          🎤 Nghệ sĩ / Ca sĩ
+        </label>
+        <div class="input-wrap">
+          <input type="text" id="artistInput" class="custom-input" placeholder="Tên nghệ sĩ..." />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          📁 Lưu vào thư mục
+        </label>
+        <div class="input-wrap">
+          <select id="folderSelect" class="custom-input"></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="preview-box">
+      <span class="preview-icon">💾</span>
+      <span class="preview-text" id="filePreview">Đang chuẩn bị...</span>
+    </div>
+
+    <!-- Download Action Button -->
+    <button id="downloadBtn" class="btn-submit">
+      <svg id="btnSvg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+      </svg>
+      <span id="btnText">Tải MP3 128k Về Máy</span>
+    </button>
+
+    <div class="toast-msg" id="toastMsg">Tự động nén chuẩn 128kbps & nhúng ảnh bìa</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Downloader - HQM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0f17;
+        --card-bg: rgba(23, 27, 44, 0.7);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --accent: #1db954;
+        --accent-hover: #1ed760;
+        --accent-grad: linear-gradient(135deg, #1db954 0%, #10b981 100%);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --input-bg: #181e2e;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+
+      body {
+        background: radial-gradient(
+          circle at top right,
+          #1a2236 0%,
+          var(--bg) 60%
+        );
+        color: var(--text-main);
+        min-height: 100vh;
+        padding: 30px 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 35px;
+      }
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(29, 185, 84, 0.1);
+        border: 1px solid rgba(29, 185, 84, 0.3);
+        padding: 8px 18px;
+        border-radius: 999px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+
+      .badge-128 {
+        background: #3b82f6;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 6px;
+        margin-left: 6px;
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 8px;
+        background: linear-gradient(to right, #ffffff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      p.subtitle {
+        color: var(--text-muted);
+        font-size: 15px;
+      }
+
+      .search-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 12px;
+      }
+
+      .search-input {
+        flex: 1;
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 14px 18px;
+        color: #fff;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .search-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.2);
+      }
+
+      .btn {
+        cursor: pointer;
+        border: none;
+        outline: none;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 14px 24px;
+        border-radius: 12px;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        background: var(--accent-grad);
+        color: #0c0f17;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(29, 185, 84, 0.4);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      .folder-row {
+        margin-top: 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .folder-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .folder-select,
+      .new-folder-input {
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .folder-select:focus,
+      .new-folder-input:focus {
+        border-color: var(--accent);
+      }
+
+      .results-heading {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .results-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .song-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.2s;
+      }
+
+      .song-card:hover {
+        border-color: rgba(29, 185, 84, 0.4);
+        background: rgba(30, 36, 58, 0.8);
+      }
+
+      .thumb-wrap {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #000;
+      }
+
+      .thumb-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .duration-tag {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.75);
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      .song-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .song-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .artist-name {
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .raw-source {
+        font-size: 12px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .btn-download {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-download:hover {
+        background: var(--accent);
+        color: #000;
+        border-color: var(--accent);
+      }
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-card {
+        background: #141824;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        width: 90%;
+        max-width: 520px;
+        padding: 26px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+
+      .modal-input {
+        width: 100%;
+        background: var(--input-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px 14px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .modal-input:focus {
+        border-color: var(--accent);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1e293b;
+        border: 1px solid var(--accent);
+        color: #fff;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 200;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+            />
+          </svg>
+          Audio Studio
+          <span class="badge-128">Downloader</span>
+        </div>
+        <h1>Công Cụ Tải & Chuẩn Hóa Nhạc MP3</h1>
+        <p class="subtitle">
+          Tự động làm sạch tên file, tải chất lượng MP3 128kbps nhẹ & nhanh
+        </p>
+      </header>
+
+      <div class="search-card">
+        <div class="input-row">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Nhập tên bài hát (VD: Đen Vâu Đi Về Nhà) hoặc dán link YouTube..."
+          />
+          <button id="searchBtn" class="btn btn-primary">
+            <span id="searchIcon">🔍</span>
+            <span id="searchTxt">Tìm kiếm</span>
+          </button>
+        </div>
+
+        <div class="folder-row">
+          <span class="folder-label">📁 Lưu vào thư mục:</span>
+          <select id="folderSelect" class="folder-select"></select>
+          <input
+            type="text"
+            id="newFolderInput"
+            class="new-folder-input"
+            placeholder="+ Hoặc tạo thư mục mới..."
+            style="display: none"
+          />
+          <button
+            id="toggleNewFolderBtn"
+            class="btn btn-download"
+            style="padding: 8px 12px; font-size: 12px"
+          >
+            + Tạo mới
+          </button>
+        </div>
+      </div>
+
+      <div id="resultsContainer" style="display: none">
+        <div class="results-heading">
+          <span>Kết quả tìm kiếm phù hợp</span>
+        </div>
+        <div class="results-list" id="resultsList"></div>
+      </div>
+    </div>
+
+    <!-- Download Confirm Modal -->
+    <div class="modal-overlay" id="downloadModal">
+      <div class="modal-card">
+        <h3 class="modal-title">Xác Nhận Tải (128 kbps)</h3>
+
+        <div class="form-group">
+          <label>Tên bài hát:</label>
+          <input type="text" id="modalSongName" class="modal-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Tên ca sĩ / Nhạc sĩ:</label>
+          <input type="text" id="modalArtist" class="modal-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Tên file MP3 sẽ lưu:</label>
+          <input
+            type="text"
+            id="modalFilenamePreview"
+            class="modal-input"
+            readonly
+            style="opacity: 0.8; background: #0c0f17"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Thư mục lưu:</label>
+          <input
+            type="text"
+            id="modalFolder"
+            class="modal-input"
+            readonly
+            style="opacity: 0.8; background: #0c0f17"
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-cancel" id="cancelModalBtn">Hủy</button>
+          <button class="btn btn-primary" id="confirmDownloadBtn">
+            <span id="downloadBtnText">Bắt đầu tải (MP3 128k)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      let currentTracks = [];
+      let selectedTrack = null;
+
+      async function loadFolders() {
+        try {
+          const res = await fetch("/api/folders");
+          const data = await res.json();
+          const select = document.getElementById("folderSelect");
+          select.innerHTML = "";
+          data.folders.forEach((f) => {
+            const opt = document.createElement("option");
+            opt.value = f;
+            opt.textContent =
+              f === "downloadmp3" ? "📁 downloadmp3 (Mặc định)" : f;
+            if (f === "downloadmp3") opt.selected = true;
+            select.appendChild(opt);
+          });
+        } catch (e) {
+          console.error("Lỗi tải danh sách folder:", e);
+        }
+      }
+
+      document
+        .getElementById("toggleNewFolderBtn")
+        .addEventListener("click", () => {
+          const inp = document.getElementById("newFolderInput");
+          const sel = document.getElementById("folderSelect");
+          if (inp.style.display === "none") {
+            inp.style.display = "inline-block";
+            sel.style.display = "none";
+            inp.focus();
+            document.getElementById("toggleNewFolderBtn").textContent =
+              "Chọn có sẵn";
+          } else {
+            inp.style.display = "none";
+            sel.style.display = "inline-block";
+            document.getElementById("toggleNewFolderBtn").textContent =
+              "+ Tạo mới";
+          }
+        });
+
+      function getTargetFolder() {
+        const inp = document.getElementById("newFolderInput");
+        if (inp.style.display !== "none" && inp.value.trim()) {
+          return inp.value.trim();
+        }
+        return document.getElementById("folderSelect").value || "downloadmp3";
+      }
+
+      function cleanYouTubeUrl(url) {
+        if (!url) return url;
+        url = url.trim();
+        try {
+          if (url.includes("youtube.com") || url.includes("youtu.be")) {
+            const u = new URL(url);
+            if (u.hostname.includes("youtu.be")) {
+              const id = u.pathname.replace(/^\//, "");
+              return id ? `https://www.youtube.com/watch?v=${id}` : url;
+            }
+            if (u.pathname.includes("/shorts/")) {
+              const id = u.pathname.split("/shorts/")[1].split("/")[0];
+              return id ? `https://www.youtube.com/watch?v=${id}` : url;
+            }
+            const v = u.searchParams.get("v");
+            if (v) {
+              return `https://www.youtube.com/watch?v=${v}`;
+            }
+          }
+        } catch (e) {}
+        return url;
+      }
+
+      const searchInputEl = document.getElementById("searchInput");
+      searchInputEl.addEventListener("paste", (e) => {
+        setTimeout(() => {
+          const cur = searchInputEl.value;
+          const cleaned = cleanYouTubeUrl(cur);
+          if (cleaned !== cur) {
+            searchInputEl.value = cleaned;
+            showToast("🎯 Đã tự động làm sạch link về 1 video đơn lẻ!");
+          }
+        }, 50);
+      });
+
+      async function handleSearch() {
+        let query = searchInputEl.value.trim();
+        if (!query) return;
+
+        // Auto clean URL if it's a YouTube link
+        const cleaned = cleanYouTubeUrl(query);
+        if (cleaned !== query) {
+          query = cleaned;
+          searchInputEl.value = cleaned;
+        }
+
+        const btn = document.getElementById("searchBtn");
+        const txt = document.getElementById("searchTxt");
+        btn.disabled = true;
+        txt.innerHTML = '<span class="spinner"></span> Đang tìm...';
+
+        try {
+          const res = await fetch("/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+          const data = await res.json();
+          currentTracks = data.results || [];
+          renderResults();
+        } catch (err) {
+          showToast("Lỗi khi tìm kiếm: " + err);
+        } finally {
+          btn.disabled = false;
+          txt.textContent = "Tìm kiếm";
+        }
+      }
+
+      function renderResults() {
+        const container = document.getElementById("resultsContainer");
+        const list = document.getElementById("resultsList");
+        list.innerHTML = "";
+
+        if (currentTracks.length === 0) {
+          container.style.display = "none";
+          showToast("Không tìm thấy bài hát phù hợp.");
+          return;
+        }
+
+        currentTracks.forEach((t, idx) => {
+          const card = document.createElement("div");
+          card.className = "song-card";
+          card.innerHTML = `
+          <div class="thumb-wrap">
+            <img src="${t.thumbnail || "https://via.placeholder.com/120"}" alt="Thumb" />
+            <span class="duration-tag">${t.duration}</span>
+          </div>
+          <div class="song-info">
+            <div class="song-name" title="${t.clean_song}">${t.clean_song}</div>
+            <div class="artist-name">${t.clean_artist || "Nhiều nghệ sĩ"}</div>
+            <div class="raw-source">Nguồn: ${t.raw_title} (${t.uploader})</div>
+          </div>
+          <button class="btn btn-download" onclick="openDownloadModal(${idx})">
+            ⬇ Tải (128k)
+          </button>
+        `;
+          list.appendChild(card);
+        });
+
+        container.style.display = "block";
+      }
+
+      function removeAccents(str) {
+        if (!str) return "";
+        return str
+          .replace(/Đ/g, "D")
+          .replace(/đ/g, "d")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
+
+      window.openDownloadModal = function (idx) {
+        selectedTrack = currentTracks[idx];
+        const targetFolder = getTargetFolder();
+
+        document.getElementById("modalSongName").value =
+          removeAccents(selectedTrack.clean_song);
+        document.getElementById("modalArtist").value =
+          removeAccents(selectedTrack.clean_artist);
+        document.getElementById("modalFolder").value = targetFolder;
+        updatePreviewName();
+
+        document.getElementById("downloadModal").style.display = "flex";
+      };
+
+      function updatePreviewName() {
+        const song = removeAccents(document.getElementById("modalSongName").value.trim());
+        const artist = removeAccents(document.getElementById("modalArtist").value.trim());
+        const preview = artist ? `${artist} - ${song}.mp3` : `${song}.mp3`;
+        document.getElementById("modalFilenamePreview").value = preview;
+      }
+
+      document
+        .getElementById("modalSongName")
+        .addEventListener("input", updatePreviewName);
+      document
+        .getElementById("modalArtist")
+        .addEventListener("input", updatePreviewName);
+
+      document
+        .getElementById("cancelModalBtn")
+        .addEventListener("click", () => {
+          document.getElementById("downloadModal").style.display = "none";
+        });
+
+      document
+        .getElementById("confirmDownloadBtn")
+        .addEventListener("click", async () => {
+          if (!selectedTrack) return;
+          const btn = document.getElementById("confirmDownloadBtn");
+          const btnTxt = document.getElementById("downloadBtnText");
+          const song = removeAccents(document.getElementById("modalSongName").value.trim());
+          const artist = removeAccents(document.getElementById("modalArtist").value.trim());
+          const folder = document.getElementById("modalFolder").value;
+
+          btn.disabled = true;
+          btnTxt.innerHTML =
+            '<span class="spinner"></span> Đang tải & xuất MP3 128k...';
+
+          try {
+            const res = await fetch("/api/download", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                url: selectedTrack.url,
+                folder: folder,
+                title: song,
+                artist: artist,
+                thumbnail: selectedTrack.thumbnail,
+              }),
+            });
+            const data = await res.json();
+            if (data.error) {
+              showToast("Lỗi: " + data.error);
+            } else {
+              document.getElementById("downloadModal").style.display = "none";
+              showToast(
+                `🎉 Đã tải thành công: ${data.filename} vào [${folder}] (128kbps)`,
+              );
+              loadFolders();
+            }
+          } catch (err) {
+            showToast("Lỗi tải bài hát: " + err);
+          } finally {
+            btn.disabled = false;
+            btnTxt.textContent = "Bắt đầu tải (MP3 128k)";
+          }
+        });
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.display = "block";
+        setTimeout(() => {
+          t.style.display = "none";
+        }, 4000);
+      }
+
+      document
+        .getElementById("searchBtn")
+        .addEventListener("click", handleSearch);
+      document
+        .getElementById("searchInput")
+        .addEventListener("keypress", (e) => {
+          if (e.key === "Enter") handleSearch();
+        });
+
+      loadFolders();
+    </script>
+  </body>
+</html>

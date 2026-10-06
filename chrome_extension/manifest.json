@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Muif Music Downloader (128kbps)",
+  "version": "1.0",
+  "description": "Tải nhạc MP3 128kbps trực tiếp từ YouTube về máy tính, tự động làm sạch tên file và nhúng thẻ ID3.",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8899/*",
+    "*://*.youtube.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

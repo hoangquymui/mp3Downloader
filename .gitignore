@@ -1,0 +1,16 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Audio downloads and temporary files
+*.mp3
+*.m4a
+*.webm
+*.part
+*.ytdl
+temp_*
+
+# Environment / OS
+.DS_Store
+Thumbs.db
